@@ -1,102 +1,269 @@
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
-import java.util.Vector;
 
 /**
  * Created by Константин on 14.03.2016.
  */
 public class Window {
+    JTextField fieldP = new JTextField();
+    JTextField fieldA = new JTextField();
+
+    JTextField fieldXi = new JTextField();
+    JTextField fieldYi = new JTextField();
+    JTextField fieldZ1 = new JTextField();
+
+    JTextField fieldXj = new JTextField();
+    JTextField fieldYj = new JTextField();
+    JTextField fieldZ2 = new JTextField();
+
+
+
     public JFrame createFrame(String name) {
         JFrame frame = new JFrame();
         frame.setName(name);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JLabel enterP = new JLabel("Enter P");
-        JTextField fieldForP = new JTextField();
-        JTextArea fieldForI = new JTextArea();
-        JTextArea fieldForJ = new JTextArea();
-        JButton okButton = new JButton("OK");
-        okButton.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        Box apBox = Box.createHorizontalBox();
 
         Box box1 = Box.createHorizontalBox();
-        box1.add(enterP);
-        box1.add(Box.createRigidArea(new Dimension(6, 6)));
-        box1.add(fieldForP);
+        box1.setBorder(new TitledBorder("Число p"));
+        box1.add(fieldP);
 
-        Box mainBox = Box.createVerticalBox();
-        mainBox.setBorder(new EmptyBorder(12, 12, 12, 12));
-        mainBox.add(box1);
-        mainBox.add(Box.createRigidArea(new Dimension(6, 6)));
-        mainBox.add(fieldForI);
-        mainBox.add(Box.createRigidArea(new Dimension(6, 6)));
-        mainBox.add(fieldForJ);
-        mainBox.add(Box.createRigidArea(new Dimension(6, 6)));
-        mainBox.add(okButton);
-
-
-        okButton.addActionListener(new ActionListener() {
+        fieldA.setEditable(false);
+        Box box2 = Box.createHorizontalBox();
+        box2.setBorder(new TitledBorder("Число а"));
+        box2.add(fieldA);
+        box2.add(Box.createRigidArea(new Dimension(6, 6)));
+        JButton buttonA = new JButton("Найти а");
+        buttonA.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if ("".equals(fieldForP.getText())) return;
-                int p = Integer.parseInt(fieldForP.getText());
-                Random random = new Random();
-                int x = random.nextInt(p - 1) + 1;
-                int a = 7;
-                int aMas[] = new int[p - 1];
-                for (int i = 1; i < p; i++) {
-                    aMas[i - 1] = (int) (Math.pow(a, i) % p);
+                if (!isSimple(Integer.parseInt(fieldP.getText()))) {
+                    JOptionPane.showMessageDialog(null,"Введите простое число", "Information", JOptionPane.WARNING_MESSAGE);
+                    return;
                 }
-                for (int i = 0; i < p - 1; i++) {
-                    System.out.printf(Integer.toString(aMas[i]) + " ");
+                if ("".equals(fieldP.getText())) return;
+                int p = Integer.parseInt(fieldP.getText());
+                int a = 2;
+
+                metka:
+                for (a = 2; a <= p; a++) {
+                    int[] aMas = new int[p - 1];
+                    aMas[0] = a;
+                    for (int i = 2; i < p; i++) {
+                        if (Math.pow(a, i) > p) aMas[i - 1] = ((int) (Math.pow(a, i) % p));
+                        else aMas[i - 1] = (int) (p % Math.pow(a, i));
+                    }
+
+                    Arrays.sort(aMas);
+
+                    for (int j = 0; j < aMas.length - 1; j++) {
+                        if (aMas[j] == aMas[j + 1]) {
+                            continue metka;
+                        }
+                    }
+                    break;
                 }
-                int[] list = new int[10000];
-                for (int i = 9999; i > 0; i -= 2) {
-                    list[i] = i;
-                }
-                quickSort(list, 0, 9999);
-/*                fieldForI.setText("Xi = " + Math.pow(2,6000));*/
+                fieldA.setText(Integer.toString(a));
             }
         });
+        box2.add(buttonA);
+
+        apBox.add(box1);
+        apBox.add(Box.createRigidArea(new Dimension(6, 6)));
+        apBox.add(box2);
+
+        Box mainBox = Box.createVerticalBox();
+        mainBox.setBorder(new EmptyBorder(6, 6, 6, 6));
+
+        Box abBox = Box.createHorizontalBox();
+        abBox.add(createBox1());
+        abBox.add(createBox2());
+
+        mainBox.add(apBox);
+        mainBox.add(abBox);
 
         frame.setContentPane(mainBox);
-        frame.setSize(400, 300);
+        frame.setSize(650, 350);
         return frame;
     }
 
-    int partition(int arr[], int left, int right) {
-        int i = left, j = right;
-        int tmp;
-        int pivot = arr[(left + right) / 2];
+    private Box createBox1() {
 
-        while (i <= j) {
-            while (arr[i] < pivot)
-                i++;
-            while (arr[j] > pivot)
-                j--;
-            if (i <= j) {
-                tmp = arr[i];
-                arr[i] = arr[j];
-                arr[j] = tmp;
-                i++;
-                j--;
+        Box box3 = Box.createHorizontalBox();
+        box3.setBorder(new TitledBorder("Число Xi"));
+        box3.add(fieldXi);
+        box3.add(Box.createRigidArea(new Dimension(6, 6)));
+        JButton fieldXiButton = new JButton("Выбрать Xi");
+        fieldXiButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if ("".equals(fieldP.getText())) {
+                    JOptionPane.showMessageDialog(null, "Введите число p",
+                            "Information", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                Random random = new Random();
+                fieldXi.setText(Integer.toString(random.nextInt(Integer.parseInt(fieldP.getText())) + 1));
             }
-        }
-        ;
+        });
+        box3.add(fieldXiButton);
 
-        return i;
+        Box box4 = Box.createHorizontalBox();
+        box4.setBorder(new TitledBorder("Число Yi"));
+        fieldYi.setEditable(false);
+        box4.add(fieldYi);
+        box4.add(Box.createRigidArea(new Dimension(6, 6)));
+        JButton fieldYiButton = new JButton("Вычислить Yi");
+        fieldYiButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if ("".equals(fieldXi.getText())) {
+                    JOptionPane.showMessageDialog(null, "Введите число Xi",
+                            "Information", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                if ("".equals(fieldA.getText())) {
+                    JOptionPane.showMessageDialog(null, "Введите число a",
+                            "Information", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                Integer a = Integer.parseInt(fieldA.getText());
+                Integer Xi = Integer.parseInt(fieldXi.getText());
+                Integer p = Integer.parseInt(fieldP.getText());
+                fieldYi.setText(Integer.toString((int)(Math.pow(a,Xi) % p)));
+            }
+        });
+        box4.add(fieldYiButton);
+
+        Box box5 = Box.createHorizontalBox();
+        box5.setBorder(new TitledBorder("Число Zij"));
+        fieldZ1.setEditable(false);
+        box5.add(fieldZ1);
+        box5.add(Box.createRigidArea(new Dimension(6, 6)));
+        JButton fieldZ1Button = new JButton("Вычислить Zij");
+        fieldZ1Button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if ("".equals(fieldXi.getText())) {
+                    JOptionPane.showMessageDialog(null, "Введите число Xi",
+                            "Information", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                if ("".equals(fieldYj.getText())) {
+                    JOptionPane.showMessageDialog(null, "Введите число Yj",
+                            "Information", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                Integer Xi = Integer.parseInt(fieldXi.getText());
+                Integer Yj = Integer.parseInt(fieldYj.getText());
+                Integer p = Integer.parseInt(fieldP.getText());
+                fieldZ1.setText(Integer.toString((int)(Math.pow(Yj,Xi))));
+            }
+        });
+        box5.add(fieldZ1Button);
+
+        Box box = Box.createVerticalBox();
+        box.setBorder(new CompoundBorder(new TitledBorder("Алиса"), new EmptyBorder(12, 12, 12, 12)));
+        box.add(box3);
+        box.add(Box.createRigidArea(new Dimension(6, 6)));
+        box.add(box4);
+        box.add(Box.createRigidArea(new Dimension(6, 6)));
+        box.add(box5);
+        return box;
     }
 
-    void quickSort(int arr[], int left, int right) {
-        int index = partition(arr, left, right);
-        if (left < index - 1)
-            quickSort(arr, left, index - 1);
-        if (index < right)
-            quickSort(arr, index, right);
+    private Box createBox2() {
+
+        Box box3 = Box.createHorizontalBox();
+        box3.setBorder(new TitledBorder("Число Xj"));
+        box3.add(fieldXj);
+        box3.add(Box.createRigidArea(new Dimension(6, 6)));
+        JButton fieldXjButton = new JButton("Выбрать Xj");
+        fieldXjButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if ("".equals(fieldP.getText())) {
+                    JOptionPane.showMessageDialog(null, "Введите число p",
+                            "Information", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                Random random = new Random();
+                fieldXj.setText(Integer.toString(random.nextInt(Integer.parseInt(fieldP.getText())) + 1));
+            }
+        });
+
+        box3.add(fieldXjButton);
+
+        Box box4 = Box.createHorizontalBox();
+        box4.setBorder(new TitledBorder("Число Yj"));
+        fieldYj.setEditable(false);
+        box4.add(fieldYj);
+        box4.add(Box.createRigidArea(new Dimension(6, 6)));
+        JButton fieldYjButton = new JButton("Вычислить Yj");
+        fieldYjButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if ("".equals(fieldXj.getText())) {
+                    JOptionPane.showMessageDialog(null, "Введите число Xj",
+                            "Information", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                if ("".equals(fieldA.getText())) {
+                    JOptionPane.showMessageDialog(null, "Введите число a",
+                            "Information", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                Integer a = Integer.parseInt(fieldA.getText());
+                Integer Xj = Integer.parseInt(fieldXj.getText());
+                Integer p = Integer.parseInt(fieldP.getText());
+                fieldYj.setText(Integer.toString((int)(Math.pow(a,Xj) % p)));
+            }
+        });
+        box4.add(fieldYjButton);
+
+        Box box5 = Box.createHorizontalBox();
+        box5.setBorder(new TitledBorder("Число Zji"));
+        fieldZ2.setEditable(false);
+        box5.add(fieldZ2);
+        box5.add(Box.createRigidArea(new Dimension(6, 6)));
+        JButton fieldZ2Button = new JButton("Вычислить Zji");
+        fieldZ2Button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if ("".equals(fieldXj.getText())) {
+                    JOptionPane.showMessageDialog(null, "Введите число Xj",
+                            "Information", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                if ("".equals(fieldYi.getText())) {
+                    JOptionPane.showMessageDialog(null, "Введите число Yi",
+                            "Information", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                Integer Xj = Integer.parseInt(fieldXj.getText());
+                Integer Yi = Integer.parseInt(fieldYi.getText());
+                Integer p = Integer.parseInt(fieldP.getText());
+                fieldZ2.setText(Integer.toString((int)(Math.pow(Yi,Xj))));
+            }
+        });
+        box5.add(fieldZ2Button);
+
+        Box box = Box.createVerticalBox();
+        box.setBorder(new CompoundBorder(new TitledBorder("Боб"), new EmptyBorder(12, 12, 12, 12)));
+        box.add(box3);
+        box.add(Box.createRigidArea(new Dimension(6, 6)));
+        box.add(box4);
+        box.add(Box.createRigidArea(new Dimension(6, 6)));
+        box.add(box5);
+        return box;
     }
 
     public boolean isSimple(int n) {
