@@ -1,3 +1,5 @@
+import com.sun.org.apache.xpath.internal.SourceTree;
+
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -51,19 +53,29 @@ public class Window {
                 }
                 if ("".equals(fieldP.getText())) return;
                 int p = Integer.parseInt(fieldP.getText());
-                int a = 2;
+                int a;
 
                 metka:
                 for (a = 2; a <= p; a++) {
+                    System.out.println(a);
+                    int powA = a;
                     int[] aMas = new int[p - 1];
-                    aMas[0] = a;
-                    for (int i = 2; i < p; i++) {
-                        if (Math.pow(a, i) > p) aMas[i - 1] = ((int) (Math.pow(a, i) % p));
-                        else aMas[i - 1] = (int) (p % Math.pow(a, i));
+                    for (int i = 1; i < p; i++) {
+                        if (powA > p) powA = powA % p;
+                        aMas[i - 1] = powA;
+                        powA = powA * a;
                     }
-
+                    System.out.println();
+                    for (int k = 0; k < aMas.length; k ++) {
+                        System.out.print(aMas[k] + " ");
+                    }
+                    System.out.println();
                     Arrays.sort(aMas);
-
+                    for (int k = 0; k < aMas.length; k ++) {
+                        System.out.print(aMas[k] + " ");
+                    }
+                    System.out.println();
+                    System.out.println();
                     for (int j = 0; j < aMas.length - 1; j++) {
                         if (aMas[j] == aMas[j + 1]) {
                             continue metka;
@@ -95,6 +107,17 @@ public class Window {
         return frame;
     }
 
+    private int pow(int a, int i, int p) {
+        int resA = a;
+        for (int j = 0; j < i; j++) {
+            resA *= a;
+            if (resA > p) resA = resA % p;
+            System.out.print(resA + " ");
+        }
+        System.out.println();
+
+        return resA;
+    }
     private Box createBox1() {
 
         Box box3 = Box.createHorizontalBox();
@@ -138,7 +161,13 @@ public class Window {
                 Integer a = Integer.parseInt(fieldA.getText());
                 Integer Xi = Integer.parseInt(fieldXi.getText());
                 Integer p = Integer.parseInt(fieldP.getText());
-                fieldYi.setText(Integer.toString((int)(Math.pow(a,Xi) % p)));
+
+                int powA = a;
+                for (int i = 1; i < Xi; i++) {
+                    powA = powA * a;
+                    if (powA > Xi) powA = powA % p;
+                }
+                fieldYi.setText(Integer.toString(powA));
             }
         });
         box4.add(fieldYiButton);
@@ -165,7 +194,12 @@ public class Window {
                 Integer Xi = Integer.parseInt(fieldXi.getText());
                 Integer Yj = Integer.parseInt(fieldYj.getText());
                 Integer p = Integer.parseInt(fieldP.getText());
-                fieldZ1.setText(Integer.toString((int)(Math.pow(Yj,Xi))));
+                int powA = Yj;
+                for (int i = 1; i < Xi; i++) {
+                    powA = powA * Yj;
+                    if (powA > Xi) powA = powA % p;
+                }
+                fieldZ1.setText(Integer.toString(powA));
             }
         });
         box5.add(fieldZ1Button);
@@ -224,7 +258,12 @@ public class Window {
                 Integer a = Integer.parseInt(fieldA.getText());
                 Integer Xj = Integer.parseInt(fieldXj.getText());
                 Integer p = Integer.parseInt(fieldP.getText());
-                fieldYj.setText(Integer.toString((int)(Math.pow(a,Xj) % p)));
+                int powA = a;
+                for (int i = 1; i < Xj; i++) {
+                    powA = powA * a;
+                    if (powA > Xj) powA = powA % p;
+                }
+                fieldYj.setText(Integer.toString(powA));
             }
         });
         box4.add(fieldYjButton);
@@ -251,7 +290,12 @@ public class Window {
                 Integer Xj = Integer.parseInt(fieldXj.getText());
                 Integer Yi = Integer.parseInt(fieldYi.getText());
                 Integer p = Integer.parseInt(fieldP.getText());
-                fieldZ2.setText(Integer.toString((int)(Math.pow(Yi,Xj))));
+                int powA = Yi;
+                for (int i = 1; i < Xj; i++) {
+                    powA = powA * Yi;
+                    if (powA > Xj) powA = powA % p;
+                }
+                fieldZ2.setText(Integer.toString(powA));
             }
         });
         box5.add(fieldZ2Button);
